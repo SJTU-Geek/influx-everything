@@ -10,7 +10,7 @@
   "author": "SJTU-Plus",
   "license": "Apache-2.0",
   "dependencies": {
-    "@influxdata/influxdb-client": "^1.10.0",
-    "axios": "^0.21.1"
+    "@influxdata/influxdb-client": "^1.35.0",
+    "axios": "^1.10.0"
   }
 }
