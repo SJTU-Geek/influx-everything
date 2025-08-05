@@ -12,18 +12,14 @@ export async function fetchData() {
         "27044",
         "27045"
     ]
-    const CategoryCodeIDList = [
-        "00",
-        "01",
-        "02"
-    ]
 
     const laundriesData = await Promise.all(
         LaundriesIDList.map(async (id) => {
             const laundryDetail = await axios.get(`https://yshz-user.haier-ioc.com/position/positionDetail`, {
                 params: { id }
             })
-            const deviceDetail = (await Promise.all(CategoryCodeIDList.map(async (categoryCode) => {
+            const categoryCodeIDList = laundryDetail.data.data.positionDeviceDetailList.map(e => e.categoryCode);
+            const deviceDetail = (await Promise.all(categoryCodeIDList.map(async (categoryCode) => {
                 const res = await axios.post("https://yshz-user.haier-ioc.com/position/deviceDetailPage", {
                     "positionId": id,
                     "categoryCode": categoryCode,
