@@ -59,7 +59,7 @@ export async function fetchData() {
                 .tag("category_name", device["categoryName"])
                 .tag("floor_code", device["floorCode"])
                 .booleanField('free', device["state"] === 1)
-                .booleanField('error', device["state"] === 2)
+                .booleanField('used', device["state"] === 2)
                 .stringField('extra', device["finishTime"] ?? "")
                 .timestamp(time);
             writeApi.writePoint(point)
