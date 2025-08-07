@@ -13,6 +13,7 @@
     "@influxdata/influxdb-client": "^1.35.0",
     "axios": "^1.10.0",
     "axios-cookiejar-support": "^6.0.2",
+    "p-map": "^7.0.3",
     "tough-cookie": "^5.1.2"
   }
 }
