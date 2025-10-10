@@ -11,7 +11,7 @@ writeApi.useDefaultTags({ host: 'host1' })
 
 export async function fetchData() {
     function getEquipmentData() {
-        return axios.get('https://e-mobile.sjtu.edu.cn/electromobile/website/list?longitude=0&latitude=0&instance=&power=&fees=&deviceStatus=&websiteName=&websiteId=&portStatus=&limit=100&page=1', {
+        return axios.get('https://e-mobile.sjtu.edu.cn/electromobile/website/list?longitude=0&latitude=0&instance=&power=&fees=&deviceStatus=&websiteName=&websiteId=&portStatus=&limit=200&page=1', {
             timeout: 10000
         });
     }
