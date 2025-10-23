@@ -55,3 +55,9 @@ export const axiosWithProxy = axios.create({
     httpAgent,
     httpsAgent
 });
+axiosWithProxy.interceptors.response.use(response => {
+    return response;
+}, error => {
+    console.error('While requesting ', error.request?.host, ', Axios request error:', error.message);
+    return Promise.reject(error);
+});
