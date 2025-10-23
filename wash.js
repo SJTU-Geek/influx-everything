@@ -71,7 +71,7 @@ export async function fetchData() {
         }
     }));
 
-    async function saveToInflux(laundry, time) {
+    async function saveToInflux(laundry) {
         laundry.devices.forEach(device => {
             let point = new Point('wash_device')
                 .tag("laundry_name", laundry["laundryName"])
@@ -92,7 +92,6 @@ export async function fetchData() {
                 .tag("category_name", summary["categoryName"])
                 .intField("all", summary.total)
                 .intField("idle", summary.idleCount)
-                .timestamp(time);
             writeApi.writePoint(point)
         });
         await writeApi.flush()
