@@ -6,8 +6,11 @@ jar.setCookie(`JAAuthCookie=${process.env.JAAuthCookie}`, "https://jaccount.sjtu
 
 const bucket = bucket_prefix + "charge";
 
-const writeApi = client.getWriteApi(org, bucket)
-writeApi.useDefaultTags({ host: 'host1' })
+let writeApi;
+if (client) {
+    writeApi = client.getWriteApi(org, bucket);
+    writeApi.useDefaultTags({ host: 'host1' });
+}
 
 export async function fetchData() {
     function getEquipmentData() {
@@ -27,7 +30,11 @@ export async function fetchData() {
 
     const equipments = equipmentsData.data.data.map((e) => ({ name: e.website_name, ports: e.port_list, ...e }))
 
-    await Promise.all(equipments.map(async e => await saveToInflux(e, new Date(Number(equipmentsData.data.timestamp)))));
+    await Promise.all(equipments.map(async e => {
+        if (writeApi) {
+            await saveToInflux(e, new Date(Number(equipmentsData.data.timestamp)));
+        }
+    }));
 
     async function saveToInflux(equipment, time) {
         equipment.ports.forEach(port => {
@@ -38,14 +45,14 @@ export async function fetchData() {
                 .booleanField('free', port["device_status"] === "free")
                 .booleanField('error', port["device_status"] === "error")
                 .timestamp(time);
-            writeApi.writePoint(point)
+            writeApi.writePoint(point);
         });
         let devicePoint = new Point('mobile_charge')
             .tag("device_name", equipment["name"])
             .intField("all", equipment.count)
             .intField("idle", equipment.idle)
             .intField("damage", equipment.damage);
-        writeApi.writePoint(devicePoint)
-        await writeApi.flush()
+        writeApi.writePoint(devicePoint);
+        await writeApi.flush();
     }
 }

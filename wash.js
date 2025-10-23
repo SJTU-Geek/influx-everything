@@ -5,8 +5,11 @@ import axios from "axios";
 
 const bucket = bucket_prefix + "wash";
 
-const writeApi = client.getWriteApi(org, bucket)
-writeApi.useDefaultTags({ host: 'host1' })
+let writeApi;
+if (client) {
+    writeApi = client.getWriteApi(org, bucket);
+    writeApi.useDefaultTags({ host: 'host1' });
+}
 
 export async function fetchData() {
     const LaundriesIDList = [
@@ -62,7 +65,11 @@ export async function fetchData() {
 
     }, { concurrency: 5 });
 
-    await Promise.all(laundriesData.map(async e => await saveToInflux(e, new Date())));
+    await Promise.all(laundriesData.map(async e => {
+        if (writeApi) {
+            await saveToInflux(e);
+        }
+    }));
 
     async function saveToInflux(laundry, time) {
         laundry.devices.forEach(device => {
@@ -76,7 +83,6 @@ export async function fetchData() {
                 .booleanField('free', device["state"] === 1)
                 .booleanField('used', device["state"] === 2)
                 .stringField('extra', device["finishTime"] ?? "")
-                .timestamp(time);
             writeApi.writePoint(point)
         });
         laundry.laundrySummary.forEach(summary => {
