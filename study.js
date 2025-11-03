@@ -1,6 +1,6 @@
 import { client, bucket_prefix, org } from './config.js';
 import { Point } from '@influxdata/influxdb-client'
-import axios from "axios";
+import { axiosWithProxy as axios } from "./utils.js"
 
 const bucket = bucket_prefix + "study";
 
@@ -15,7 +15,7 @@ export async function fetchData() {
     const rooms = await axios.post('https://ids.sjtu.edu.cn/classRoom/getByFreeClassroomInfo', `roomCode=LGXQ`, { headers: { 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8' } })
         .then(function (response) {
             return JSON.parse(response.data.data.freeClassRoomList)
-        }).catch(err => console.error(err));
+        });
     for (const room of rooms) {
         if (writeApi) {
             saveToInfluxdb(room);

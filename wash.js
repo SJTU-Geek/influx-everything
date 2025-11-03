@@ -1,7 +1,7 @@
 import { client, bucket_prefix, org } from './config.js';
 import { Point } from '@influxdata/influxdb-client'
 import pMap from 'p-map';
-import axios from "axios";
+import { axiosWithProxy as axios } from "./utils.js"
 
 const bucket = bucket_prefix + "wash";
 

@@ -1,6 +1,6 @@
 import { client, bucket_prefix, org } from './config.js';
 import { Point } from '@influxdata/influxdb-client'
-import axios from "axios";
+import { axiosWithProxy as axios } from "./utils.js"
 
 const bucket = bucket_prefix + "bath";
 
@@ -11,11 +11,7 @@ if (client) {
 }
 
 export async function fetchData() {
-    const data = await axios.get('http://wap.xt.beescrm.com/activity/WaterControl/getGroupInfo/version/1')
-        .then(function (response) {
-            return response.data.data
-        })
-        .catch(err => console.error(err));
+    const data = (await axios.get('http://wap.xt.beescrm.com/activity/WaterControl/getGroupInfo/version/1')).data.data;
 
     for (const dormitory of data) {
         if (writeApi) {

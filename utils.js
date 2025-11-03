@@ -58,6 +58,6 @@ export const axiosWithProxy = axios.create({
 axiosWithProxy.interceptors.response.use(response => {
     return response;
 }, error => {
-    console.error('While requesting ', error.request?.host, ', Axios request error:', error.message);
+    console.error('While requesting ', error.request?.host ?? error.request?._currentUrl, ', Axios request error:', error.message);
     return Promise.reject(error);
 });
