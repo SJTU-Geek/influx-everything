@@ -37,6 +37,7 @@ export async function fetchData() {
             params: { id }
         })
         const categoryCodeIDList = laundryDetail.data.data.positionDeviceDetailList.map(e => e.categoryCode);
+        const laundryDate = new Date();
         const deviceDetail = (await Promise.all(categoryCodeIDList.map(async (categoryCode) => {
             const res = await axios.post("https://yshz-user.haier-ioc.com/position/deviceDetailPage", {
                 "positionId": id,
@@ -52,6 +53,7 @@ export async function fetchData() {
             const ret = res.data.data.items.map(item => ({
                 categoryCode,
                 categoryName: laundryDetail.data.data.positionDeviceDetailList.find(e => e.categoryCode === categoryCode)?.categoryName ?? "",
+                date: new Date(),
                 ...item
             }))
             return ret;
@@ -60,6 +62,7 @@ export async function fetchData() {
         return {
             laundryName: laundryDetail.data.data.name,
             laundrySummary: laundryDetail.data.data.positionDeviceDetailList,
+            laundryDate,
             devices: deviceDetail
         };
 
@@ -83,6 +86,7 @@ export async function fetchData() {
                 .booleanField('free', device["state"] === 1)
                 .booleanField('used', device["state"] === 2)
                 .stringField('extra', device["finishTime"] ?? "")
+                .timestamp(device.date)
             writeApi.writePoint(point)
         });
         laundry.laundrySummary.forEach(summary => {
@@ -92,6 +96,7 @@ export async function fetchData() {
                 .tag("category_name", summary["categoryName"])
                 .intField("all", summary.total)
                 .intField("idle", summary.idleCount)
+                .timestamp(laundry.laundryDate)
             writeApi.writePoint(point)
         });
         await writeApi.flush()
